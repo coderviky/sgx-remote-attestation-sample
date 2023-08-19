@@ -7,7 +7,7 @@
 
 #define PUBKEY_H_FILE "Enclave/Pubkey.h"
 
-#define PRVKEY_PEM_FILE "service_provider_private_key.pem"
+#define PRVKEY_PEM_FILE "service-provider/sp_private_key.pem"
 
 /* run command
 > gcc -o sp-keygen evp-key-to-file-struct.c -lssl -lcrypto && ./sp-keygen

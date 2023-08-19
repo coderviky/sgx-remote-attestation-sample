@@ -16,7 +16,7 @@ in the License.
 */
 
 #ifndef _WIN32
-#include "../config.h"
+#include "../service-provider/config.h"
 #endif
 #include "Enclave_t.h"
 #include <string.h>

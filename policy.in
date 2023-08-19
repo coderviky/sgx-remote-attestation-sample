@@ -25,4 +25,3 @@ MIN_ISVSVN=1
 # debug mode). Otherwise, set to 0 to force only production (non-debuggable)
 # enclaves. A production service should never allow debug-mode enclaves.
 ALLOW_DEBUG=1
-

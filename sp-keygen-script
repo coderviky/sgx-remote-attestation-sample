@@ -1,3 +1,0 @@
-#! /bin/sh
-
-gcc -o sp-keygen evp-key-to-file-struct.c -lssl -lcrypto && ./sp-keygen

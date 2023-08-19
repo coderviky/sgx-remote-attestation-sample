@@ -41,7 +41,7 @@ fi
 # Parse our settings file
 #----------------------------------------------------------------------------
 
-. ./settings
+. ./service-provider/settings
 . ./policy
 
 # Optional settings

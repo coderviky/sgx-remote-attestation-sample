@@ -19,6 +19,8 @@ run-client
 run-server
 settings
 
+Makefile.in
+
 client
 sp
 mrsigner
