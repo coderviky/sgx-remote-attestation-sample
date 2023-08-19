@@ -36,3 +36,4 @@ if SGX_ENABLED
 %_u.h %_u.c: %.edl
 	$(SGX_EDGER8R) --search-path $(SGXSDK_INCDIR) $(SGX_EDGER8R_FLAGS) --untrusted $<
 endif
+ 

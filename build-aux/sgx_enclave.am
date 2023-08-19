@@ -23,7 +23,7 @@ AM_LDFLAGS=@SGX_ENCLAVE_LDFLAGS@
 
 ## Trusted libraries. These exist in both hardware and simulation (_sim)
 ## form, so they need to be Makefile variables.
-
+ 
 SGX_TRTS_LIB=@SGX_TRTS_LIB@
 SGX_TSERVICE_LIB=@SGX_TSERVICE_LIB@
 
