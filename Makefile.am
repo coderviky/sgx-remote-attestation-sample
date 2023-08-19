@@ -1,5 +1,6 @@
 ## This must come first when building an application that uses Intel
 ## SGX enclaves.
+AUTOMAKE_OPTIONS = subdir-objects
 
 include $(top_srcdir)/build-aux/sgx_app.am
 
@@ -25,7 +26,7 @@ include $(top_srcdir)/build-aux/sgx_app.am
 ##   SGX_URTS_LIB
 ##   SGX_EDGER8R
 
-SUBDIRS = Enclave 
+SUBDIRS = Enclave
 
 ## Supply additional flags to edger8r here. 
 ##
@@ -69,13 +70,12 @@ bin_PROGRAMS = client sp mrsigner
 ## You can't use $(wildcard ...) with automake so all source files 
 ## have to be explicitly listed.
 
-common = byteorder.c common.cpp crypto.c hexutil.c fileio.c base64.c \
-	msgio.cpp logfile.c
+common = service-provider/byteorder.c subdir-objects service-provider/common.cpp subdir-objects service-provider/crypto.c subdir-objects service-provider/hexutil.c  subdir-objects service-provider/fileio.c subdir-objects service-provider/base64.c subdir-objects \
+	service-provider/msgio.cpp subdir-objects service-provider/logfile.c subdir-objects
 
 ## client 
 
-client_SOURCES = client.cpp sgx_detect_linux.c sgx_stub.c quote_size.c \
-	$(common)
+client_SOURCES = client.cpp service-provider/sgx_detect_linux.c subdir-objects service-provider/sgx_stub.c subdir-objects service-provider/quote_size.c subdir-objects $(common) subdir-objects
 nodist_client_SOURCES = Enclave_u.c Enclave_u.h
 EXTRA_client_DEPENDENCIES = Enclave.signed.so
 BUILT_SOURCES = Enclave_u.c Enclave_u.h
@@ -84,16 +84,16 @@ client_LDFLAGS= $(AM_LDFLAGS) @OPENSSL_LDFLAGS@
 
 ## sp
 
-sp_SOURCES = sp.cpp agent_wget.cpp iasrequest.cpp enclave_verify.c $(common)
+sp_SOURCES = service-provider/sp.cpp service-provider/agent_wget.cpp service-provider/iasrequest.cpp service-provider/enclave_verify.c $(common)
 BUILT_SOURCES += policy
 EXTRA_sp_DEPENDENCIES = Enclave.signed.so
 if AGENT_CURL
-sp_SOURCES += agent_curl.cpp
+sp_SOURCES += service-provider/agent_curl.cpp subdir-objects
 endif
 
 ## mrsigner (helper app)
 
-mrsigner_SOURCES = mrsigner.cpp crypto.c hexutil.c
+mrsigner_SOURCES = service-provider/mrsigner.cpp service-provider/crypto.c service-provider/hexutil.c subdir-objects
  
 ## Extract the enclave SIGSTRUCT and use it to calculate MRSIGNER
 policy: mrsigner policy.in Enclave.signed.so

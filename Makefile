@@ -87,7 +87,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = client$(EXEEXT) sp$(EXEEXT) mrsigner$(EXEEXT)
-am__append_1 = agent_curl.cpp
+am__append_1 = service-provider/agent_curl.cpp subdir-objects
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/sgx_init.m4 \
@@ -104,28 +104,47 @@ CONFIG_CLEAN_FILES = mrsigner.sh run-server run-client
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am__objects_1 = byteorder.$(OBJEXT) common.$(OBJEXT) crypto.$(OBJEXT) \
-	hexutil.$(OBJEXT) fileio.$(OBJEXT) base64.$(OBJEXT) \
-	msgio.$(OBJEXT) logfile.$(OBJEXT)
-am_client_OBJECTS = client.$(OBJEXT) sgx_detect_linux.$(OBJEXT) \
-	sgx_stub.$(OBJEXT) quote_size.$(OBJEXT) $(am__objects_1)
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = service-provider/byteorder.$(OBJEXT) \
+	service-provider/common.$(OBJEXT) \
+	service-provider/crypto.$(OBJEXT) \
+	service-provider/hexutil.$(OBJEXT) \
+	service-provider/fileio.$(OBJEXT) \
+	service-provider/base64.$(OBJEXT) \
+	service-provider/msgio.$(OBJEXT) \
+	service-provider/logfile.$(OBJEXT)
+am_client_OBJECTS = client.$(OBJEXT) \
+	service-provider/sgx_detect_linux.$(OBJEXT) \
+	service-provider/sgx_stub.$(OBJEXT) \
+	service-provider/quote_size.$(OBJEXT) $(am__objects_1)
 nodist_client_OBJECTS = Enclave_u.$(OBJEXT)
 client_OBJECTS = $(am_client_OBJECTS) $(nodist_client_OBJECTS)
 client_DEPENDENCIES =
 client_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(client_LDFLAGS) \
 	$(LDFLAGS) -o $@
-am_mrsigner_OBJECTS = mrsigner.$(OBJEXT) crypto.$(OBJEXT) \
-	hexutil.$(OBJEXT)
+am_mrsigner_OBJECTS = service-provider/mrsigner.$(OBJEXT) \
+	service-provider/crypto.$(OBJEXT) \
+	service-provider/hexutil.$(OBJEXT)
 mrsigner_OBJECTS = $(am_mrsigner_OBJECTS)
 mrsigner_DEPENDENCIES =
 mrsigner_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(mrsigner_LDFLAGS) $(LDFLAGS) -o $@
-am__sp_SOURCES_DIST = sp.cpp agent_wget.cpp iasrequest.cpp \
-	enclave_verify.c byteorder.c common.cpp crypto.c hexutil.c \
-	fileio.c base64.c msgio.cpp logfile.c agent_curl.cpp
-am__objects_2 = agent_curl.$(OBJEXT)
-am_sp_OBJECTS = sp.$(OBJEXT) agent_wget.$(OBJEXT) iasrequest.$(OBJEXT) \
-	enclave_verify.$(OBJEXT) $(am__objects_1) $(am__objects_2)
+am__sp_SOURCES_DIST = service-provider/sp.cpp \
+	service-provider/agent_wget.cpp \
+	service-provider/iasrequest.cpp \
+	service-provider/enclave_verify.c service-provider/byteorder.c \
+	subdir-objects service-provider/common.cpp \
+	service-provider/crypto.c service-provider/hexutil.c \
+	service-provider/fileio.c service-provider/base64.c \
+	service-provider/msgio.cpp service-provider/logfile.c \
+	service-provider/agent_curl.cpp
+am__objects_2 =  \
+	service-provider/agent_curl.$(OBJEXT)
+am_sp_OBJECTS = service-provider/sp.$(OBJEXT) \
+	service-provider/agent_wget.$(OBJEXT) \
+	service-provider/iasrequest.$(OBJEXT) \
+	service-provider/enclave_verify.$(OBJEXT) $(am__objects_1) \
+	$(am__objects_2)
 sp_OBJECTS = $(am_sp_OBJECTS)
 sp_DEPENDENCIES =
 sp_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(sp_LDFLAGS) $(LDFLAGS) \
@@ -145,16 +164,24 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/Enclave_u.Po \
-	./$(DEPDIR)/agent_curl.Po ./$(DEPDIR)/agent_wget.Po \
-	./$(DEPDIR)/base64.Po ./$(DEPDIR)/byteorder.Po \
-	./$(DEPDIR)/client.Po ./$(DEPDIR)/common.Po \
-	./$(DEPDIR)/crypto.Po ./$(DEPDIR)/enclave_verify.Po \
-	./$(DEPDIR)/fileio.Po ./$(DEPDIR)/hexutil.Po \
-	./$(DEPDIR)/iasrequest.Po ./$(DEPDIR)/logfile.Po \
-	./$(DEPDIR)/mrsigner.Po ./$(DEPDIR)/msgio.Po \
-	./$(DEPDIR)/quote_size.Po ./$(DEPDIR)/sgx_detect_linux.Po \
-	./$(DEPDIR)/sgx_stub.Po ./$(DEPDIR)/sp.Po
+am__depfiles_remade = ./$(DEPDIR)/Enclave_u.Po ./$(DEPDIR)/client.Po \
+	service-provider/$(DEPDIR)/agent_curl.Po \
+	service-provider/$(DEPDIR)/agent_wget.Po \
+	service-provider/$(DEPDIR)/base64.Po \
+	service-provider/$(DEPDIR)/byteorder.Po \
+	service-provider/$(DEPDIR)/common.Po \
+	service-provider/$(DEPDIR)/crypto.Po \
+	service-provider/$(DEPDIR)/enclave_verify.Po \
+	service-provider/$(DEPDIR)/fileio.Po \
+	service-provider/$(DEPDIR)/hexutil.Po \
+	service-provider/$(DEPDIR)/iasrequest.Po \
+	service-provider/$(DEPDIR)/logfile.Po \
+	service-provider/$(DEPDIR)/mrsigner.Po \
+	service-provider/$(DEPDIR)/msgio.Po \
+	service-provider/$(DEPDIR)/quote_size.Po \
+	service-provider/$(DEPDIR)/sgx_detect_linux.Po \
+	service-provider/$(DEPDIR)/sgx_stub.Po \
+	service-provider/$(DEPDIR)/sp.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -398,6 +425,7 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
+AUTOMAKE_OPTIONS = subdir-objects
 SGX_EDGER8R = $(SGXSDK_BINDIR)/sgx_edger8r
 SGX_SIGN = $(SGXSDK_BINDIR)/sgx_sign
 SGXSSL_BINDIR = @SGXSSL_BINDIR@
@@ -407,25 +435,24 @@ AM_CPPFLAGS = -I$(SGXSDK_INCDIR) -fno-builtin-memset \
 	 $(am__empty)
 #AM_LDFLAGS = 
 AM_LDFLAGS = -L$(SGXSDK_LIBDIR)
-SUBDIRS = Enclave 
+SUBDIRS = Enclave
 AM_CXXFLAGS = -std=c++11 
 CLEANFILES = Enclave_u.c Enclave_u.h Enclave.edl Enclave.signed.so \
 	policy enclave_sigstruct_raw 
 
-common = byteorder.c common.cpp crypto.c hexutil.c fileio.c base64.c \
-	msgio.cpp logfile.c
+common = service-provider/byteorder.c subdir-objects service-provider/common.cpp subdir-objects service-provider/crypto.c subdir-objects service-provider/hexutil.c  subdir-objects service-provider/fileio.c subdir-objects service-provider/base64.c subdir-objects \
+	service-provider/msgio.cpp subdir-objects service-provider/logfile.c subdir-objects
 
-client_SOURCES = client.cpp sgx_detect_linux.c sgx_stub.c quote_size.c \
-	$(common)
-
+client_SOURCES = client.cpp service-provider/sgx_detect_linux.c subdir-objects service-provider/sgx_stub.c subdir-objects service-provider/quote_size.c subdir-objects $(common) subdir-objects
 nodist_client_SOURCES = Enclave_u.c Enclave_u.h
 EXTRA_client_DEPENDENCIES = Enclave.signed.so
 BUILT_SOURCES = Enclave_u.c Enclave_u.h policy
 client_LDFLAGS = $(AM_LDFLAGS) 
-sp_SOURCES = sp.cpp agent_wget.cpp iasrequest.cpp enclave_verify.c \
-	$(common) $(am__append_1)
+sp_SOURCES = service-provider/sp.cpp service-provider/agent_wget.cpp \
+	service-provider/iasrequest.cpp \
+	service-provider/enclave_verify.c $(common) $(am__append_1)
 EXTRA_sp_DEPENDENCIES = Enclave.signed.so
-mrsigner_SOURCES = mrsigner.cpp crypto.c hexutil.c
+mrsigner_SOURCES = service-provider/mrsigner.cpp service-provider/crypto.c service-provider/hexutil.c subdir-objects
 sp_LDFLAGS = $(AM_LDFLAGS)  
 mrsigner_LDFLAGS = $(AM_LDFLAGS) 
 client_LDADD = -l$(SGX_URTS_LIB) -lsgx_ukey_exchange -lcrypto \
@@ -535,14 +562,61 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+service-provider/$(am__dirstamp):
+	@$(MKDIR_P) service-provider
+	@: > service-provider/$(am__dirstamp)
+service-provider/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) service-provider/$(DEPDIR)
+	@: > service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/sgx_detect_linux.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/sgx_stub.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/quote_size.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/byteorder.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/common.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/crypto.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/hexutil.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/fileio.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/base64.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/msgio.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/logfile.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
 
 client$(EXEEXT): $(client_OBJECTS) $(client_DEPENDENCIES) $(EXTRA_client_DEPENDENCIES) 
 	@rm -f client$(EXEEXT)
 	$(AM_V_CXXLD)$(client_LINK) $(client_OBJECTS) $(client_LDADD) $(LIBS)
+service-provider/mrsigner.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
 
 mrsigner$(EXEEXT): $(mrsigner_OBJECTS) $(mrsigner_DEPENDENCIES) $(EXTRA_mrsigner_DEPENDENCIES) 
 	@rm -f mrsigner$(EXEEXT)
 	$(AM_V_CXXLD)$(mrsigner_LINK) $(mrsigner_OBJECTS) $(mrsigner_LDADD) $(LIBS)
+service-provider/sp.$(OBJEXT): service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/agent_wget.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/iasrequest.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/enclave_verify.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
+service-provider/agent_curl.$(OBJEXT):  \
+	service-provider/$(am__dirstamp) \
+	service-provider/$(DEPDIR)/$(am__dirstamp)
 
 sp$(EXEEXT): $(sp_OBJECTS) $(sp_DEPENDENCIES) $(EXTRA_sp_DEPENDENCIES) 
 	@rm -f sp$(EXEEXT)
@@ -550,29 +624,30 @@ sp$(EXEEXT): $(sp_OBJECTS) $(sp_DEPENDENCIES) $(EXTRA_sp_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f service-provider/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/Enclave_u.Po # am--include-marker
-include ./$(DEPDIR)/agent_curl.Po # am--include-marker
-include ./$(DEPDIR)/agent_wget.Po # am--include-marker
-include ./$(DEPDIR)/base64.Po # am--include-marker
-include ./$(DEPDIR)/byteorder.Po # am--include-marker
 include ./$(DEPDIR)/client.Po # am--include-marker
-include ./$(DEPDIR)/common.Po # am--include-marker
-include ./$(DEPDIR)/crypto.Po # am--include-marker
-include ./$(DEPDIR)/enclave_verify.Po # am--include-marker
-include ./$(DEPDIR)/fileio.Po # am--include-marker
-include ./$(DEPDIR)/hexutil.Po # am--include-marker
-include ./$(DEPDIR)/iasrequest.Po # am--include-marker
-include ./$(DEPDIR)/logfile.Po # am--include-marker
-include ./$(DEPDIR)/mrsigner.Po # am--include-marker
-include ./$(DEPDIR)/msgio.Po # am--include-marker
-include ./$(DEPDIR)/quote_size.Po # am--include-marker
-include ./$(DEPDIR)/sgx_detect_linux.Po # am--include-marker
-include ./$(DEPDIR)/sgx_stub.Po # am--include-marker
-include ./$(DEPDIR)/sp.Po # am--include-marker
+include service-provider/$(DEPDIR)/agent_curl.Po # am--include-marker
+include service-provider/$(DEPDIR)/agent_wget.Po # am--include-marker
+include service-provider/$(DEPDIR)/base64.Po # am--include-marker
+include service-provider/$(DEPDIR)/byteorder.Po # am--include-marker
+include service-provider/$(DEPDIR)/common.Po # am--include-marker
+include service-provider/$(DEPDIR)/crypto.Po # am--include-marker
+include service-provider/$(DEPDIR)/enclave_verify.Po # am--include-marker
+include service-provider/$(DEPDIR)/fileio.Po # am--include-marker
+include service-provider/$(DEPDIR)/hexutil.Po # am--include-marker
+include service-provider/$(DEPDIR)/iasrequest.Po # am--include-marker
+include service-provider/$(DEPDIR)/logfile.Po # am--include-marker
+include service-provider/$(DEPDIR)/mrsigner.Po # am--include-marker
+include service-provider/$(DEPDIR)/msgio.Po # am--include-marker
+include service-provider/$(DEPDIR)/quote_size.Po # am--include-marker
+include service-provider/$(DEPDIR)/sgx_detect_linux.Po # am--include-marker
+include service-provider/$(DEPDIR)/sgx_stub.Po # am--include-marker
+include service-provider/$(DEPDIR)/sp.Po # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -581,29 +656,33 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .c.o:
-	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.o:
-	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	$(AM_V_CXX)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+	$(am__mv) $$depbase.Tpo $$depbase.Po
 #	$(AM_V_CXX)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
@@ -942,6 +1021,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f service-provider/$(DEPDIR)/$(am__dirstamp)
+	-rm -f service-provider/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -954,24 +1035,24 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/Enclave_u.Po
-	-rm -f ./$(DEPDIR)/agent_curl.Po
-	-rm -f ./$(DEPDIR)/agent_wget.Po
-	-rm -f ./$(DEPDIR)/base64.Po
-	-rm -f ./$(DEPDIR)/byteorder.Po
 	-rm -f ./$(DEPDIR)/client.Po
-	-rm -f ./$(DEPDIR)/common.Po
-	-rm -f ./$(DEPDIR)/crypto.Po
-	-rm -f ./$(DEPDIR)/enclave_verify.Po
-	-rm -f ./$(DEPDIR)/fileio.Po
-	-rm -f ./$(DEPDIR)/hexutil.Po
-	-rm -f ./$(DEPDIR)/iasrequest.Po
-	-rm -f ./$(DEPDIR)/logfile.Po
-	-rm -f ./$(DEPDIR)/mrsigner.Po
-	-rm -f ./$(DEPDIR)/msgio.Po
-	-rm -f ./$(DEPDIR)/quote_size.Po
-	-rm -f ./$(DEPDIR)/sgx_detect_linux.Po
-	-rm -f ./$(DEPDIR)/sgx_stub.Po
-	-rm -f ./$(DEPDIR)/sp.Po
+	-rm -f service-provider/$(DEPDIR)/agent_curl.Po
+	-rm -f service-provider/$(DEPDIR)/agent_wget.Po
+	-rm -f service-provider/$(DEPDIR)/base64.Po
+	-rm -f service-provider/$(DEPDIR)/byteorder.Po
+	-rm -f service-provider/$(DEPDIR)/common.Po
+	-rm -f service-provider/$(DEPDIR)/crypto.Po
+	-rm -f service-provider/$(DEPDIR)/enclave_verify.Po
+	-rm -f service-provider/$(DEPDIR)/fileio.Po
+	-rm -f service-provider/$(DEPDIR)/hexutil.Po
+	-rm -f service-provider/$(DEPDIR)/iasrequest.Po
+	-rm -f service-provider/$(DEPDIR)/logfile.Po
+	-rm -f service-provider/$(DEPDIR)/mrsigner.Po
+	-rm -f service-provider/$(DEPDIR)/msgio.Po
+	-rm -f service-provider/$(DEPDIR)/quote_size.Po
+	-rm -f service-provider/$(DEPDIR)/sgx_detect_linux.Po
+	-rm -f service-provider/$(DEPDIR)/sgx_stub.Po
+	-rm -f service-provider/$(DEPDIR)/sp.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-tags
@@ -1020,24 +1101,24 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/Enclave_u.Po
-	-rm -f ./$(DEPDIR)/agent_curl.Po
-	-rm -f ./$(DEPDIR)/agent_wget.Po
-	-rm -f ./$(DEPDIR)/base64.Po
-	-rm -f ./$(DEPDIR)/byteorder.Po
 	-rm -f ./$(DEPDIR)/client.Po
-	-rm -f ./$(DEPDIR)/common.Po
-	-rm -f ./$(DEPDIR)/crypto.Po
-	-rm -f ./$(DEPDIR)/enclave_verify.Po
-	-rm -f ./$(DEPDIR)/fileio.Po
-	-rm -f ./$(DEPDIR)/hexutil.Po
-	-rm -f ./$(DEPDIR)/iasrequest.Po
-	-rm -f ./$(DEPDIR)/logfile.Po
-	-rm -f ./$(DEPDIR)/mrsigner.Po
-	-rm -f ./$(DEPDIR)/msgio.Po
-	-rm -f ./$(DEPDIR)/quote_size.Po
-	-rm -f ./$(DEPDIR)/sgx_detect_linux.Po
-	-rm -f ./$(DEPDIR)/sgx_stub.Po
-	-rm -f ./$(DEPDIR)/sp.Po
+	-rm -f service-provider/$(DEPDIR)/agent_curl.Po
+	-rm -f service-provider/$(DEPDIR)/agent_wget.Po
+	-rm -f service-provider/$(DEPDIR)/base64.Po
+	-rm -f service-provider/$(DEPDIR)/byteorder.Po
+	-rm -f service-provider/$(DEPDIR)/common.Po
+	-rm -f service-provider/$(DEPDIR)/crypto.Po
+	-rm -f service-provider/$(DEPDIR)/enclave_verify.Po
+	-rm -f service-provider/$(DEPDIR)/fileio.Po
+	-rm -f service-provider/$(DEPDIR)/hexutil.Po
+	-rm -f service-provider/$(DEPDIR)/iasrequest.Po
+	-rm -f service-provider/$(DEPDIR)/logfile.Po
+	-rm -f service-provider/$(DEPDIR)/mrsigner.Po
+	-rm -f service-provider/$(DEPDIR)/msgio.Po
+	-rm -f service-provider/$(DEPDIR)/quote_size.Po
+	-rm -f service-provider/$(DEPDIR)/sgx_detect_linux.Po
+	-rm -f service-provider/$(DEPDIR)/sgx_stub.Po
+	-rm -f service-provider/$(DEPDIR)/sp.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
