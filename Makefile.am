@@ -58,17 +58,7 @@ AM_CPPFLAGS += -fno-builtin-memset @OPENSSL_CPPFLAGS@
 CLEANFILES = Enclave_u.c Enclave_u.h Enclave.edl Enclave.signed.so \
 	policy enclave_sigstruct_raw 
 
-####--------------------- EVP Keys generation target defination ---------------------####
-## New target for sp-keygen
-# sp-keygen: evp-key-to-file-struct.c
-#     $(CC) -o sp-keygen evp-key-to-file-struct.c $(OPENSSL_LIBS)
-#     ./sp-keygen
 
-## The build target & also added sp-keygen
-
-# server: sp sp-keygen
-
-####------------ EVP Keys generation target defination END --------------####
 
 ## The build target
 

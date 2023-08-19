@@ -1092,15 +1092,6 @@ Enclave.signed.so: Enclave/Enclave.signed.so
 Enclave/Enclave.signed.so:
 	make -C Enclave
 
-####--------------------- EVP Keys generation target defination ---------------------####
-# sp-keygen: evp-key-to-file-struct.c
-#     $(CC) -o sp-keygen evp-key-to-file-struct.c $(OPENSSL_LIBS)
-#     ./sp-keygen
-
-# server: sp sp-keygen
-
-####------------ EVP Keys generation target defination END --------------####
-
 server: sp
 
 policy: mrsigner policy.in Enclave.signed.so

@@ -150,19 +150,6 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-AM_V_CXX = $(am__v_CXX_$(V))
-am__v_CXX_ = $(am__v_CXX_$(AM_DEFAULT_VERBOSITY))
-am__v_CXX_0 = @echo "  CXX     " $@;
-am__v_CXX_1 = 
-CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
-AM_V_CXXLD = $(am__v_CXXLD_$(V))
-am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
-am__v_CXXLD_0 = @echo "  CXXLD   " $@;
-am__v_CXXLD_1 = 
 SOURCES = $(Enclave_SOURCES) $(nodist_signed_enclave_debug_SOURCES) \
 	$(nodist_signed_enclave_rel_SOURCES)
 DIST_SOURCES = $(Enclave_SOURCES)
@@ -331,7 +318,7 @@ SGX_EDGER8R_FLAGS = --search-path ..
 ENCLAVE = Enclave
 ENCLAVE_CONFIG = $(ENCLAVE).config.xml
 ENCLAVE_KEY = $(ENCLAVE)_private.pem
-Enclave_SOURCES = Enclave_t.c Enclave_t.h Enclave.cpp \
+Enclave_SOURCES = Enclave_t.c Enclave_t.h Enclave.c \
 	$(ENCLAVE_KEY) $(ENCLAVE_CONFIG)
 
 Enclave_LDADD = -Wl,--no-undefined -Wl,--whole-archive -l$(SGX_TRTS_LIB) -Wl,--no-whole-archive -Wl,--start-group $(SGX_EXTRA_TLIBS) -lsgx_tstdc -lsgx_tcrypto -l$(SGX_TSERVICE_LIB) -Wl,--end-group -Wl,-Bstatic -Wl,-Bsymbolic -Wl,-pie,-eenclave_entry -Wl,--export-dynamic -Wl,--defsym,__ImageBase=0
@@ -339,7 +326,7 @@ SGX_EXTRA_TLIBS = -lsgx_tkey_exchange -lsgx_tcxx
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .o .obj
+.SUFFIXES: .c .o .obj
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/build-aux/sgx_enclave.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -415,7 +402,7 @@ clean-libexecPROGRAMS:
 
 Enclave$(EXEEXT): $(Enclave_OBJECTS) $(Enclave_DEPENDENCIES) $(EXTRA_Enclave_DEPENDENCIES) 
 	@rm -f Enclave$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(Enclave_OBJECTS) $(Enclave_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(Enclave_OBJECTS) $(Enclave_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -447,20 +434,6 @@ am--depfiles: $(am__depfiles_remade)
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-.cpp.o:
-	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	$(AM_V_CXX)source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXXCOMPILE) -c -o $@ $<
-
-.cpp.obj:
-	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-#	$(AM_V_CXX)source='$<' object='$@' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
-#	$(AM_V_CXX_no)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
