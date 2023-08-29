@@ -7,7 +7,6 @@ depcomp
 missing
 ref_sp
 public
-settings.*
 win32/agent_win32.cpp
 win32/agent_win32.h
 # -----
@@ -17,7 +16,6 @@ sp-keygen
 make-output
 run-client
 run-server
-settings
 
 Makefile.in
 
