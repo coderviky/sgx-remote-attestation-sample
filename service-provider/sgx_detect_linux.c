@@ -15,8 +15,7 @@ in the License.
 
 */
 
-
-#include "config.h"
+#include "../config.h"
 #include <sgx_urts.h>
 #include <sgx_capable.h>
 #include "sgx_stub.h"
@@ -31,17 +30,19 @@ int sgx_support = SGX_SUPPORT_UNKNOWN;
 int get_sgx_support()
 {
 #ifdef SGX_HW_SIM
-	return SGX_SUPPORT_YES|SGX_SUPPORT_ENABLED;
+	return SGX_SUPPORT_YES | SGX_SUPPORT_ENABLED;
 #else
 	sgx_device_status_t sgx_device_status;
 
-	if (sgx_support != SGX_SUPPORT_UNKNOWN) return sgx_support;
+	if (sgx_support != SGX_SUPPORT_UNKNOWN)
+		return sgx_support;
 
 	sgx_support = SGX_SUPPORT_NO;
 
 	/* Check for the PSW */
 
-	if (! have_sgx_psw()) return sgx_support;
+	if (!have_sgx_psw())
+		return sgx_support;
 
 	sgx_support = SGX_SUPPORT_YES;
 
@@ -52,8 +53,10 @@ int get_sgx_support()
 
 	/* If SGX isn't enabled yet, perform the software opt-in/enable. */
 
-	if (sgx_device_status != SGX_ENABLED) {
-		switch (sgx_device_status) {
+	if (sgx_device_status != SGX_ENABLED)
+	{
+		switch (sgx_device_status)
+		{
 		case SGX_DISABLED_REBOOT_REQUIRED:
 			/* A reboot is required. */
 			sgx_support |= SGX_SUPPORT_REBOOT_REQUIRED;
@@ -72,4 +75,3 @@ int get_sgx_support()
 	return sgx_support;
 #endif
 }
-

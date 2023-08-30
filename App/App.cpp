@@ -50,9 +50,6 @@ using namespace std;
 #define DEF_LIB_SEARCHPATH "/lib:/usr/lib"
 #endif
 
-// --------------- ABE App.cpp includes ----------------
-// read file and padding glib
-#include <glib.h>
 #include <sys/stat.h>
 #define MAX_PATH FILENAME_MAX
 #include <string.h>
@@ -104,7 +101,6 @@ char verbose = 0;
 
 #define ENCLAVE_NAME "enclave.signed.so"
 
-// ----------------------- ABE App.cpp --------------------------
 /* Global EID shared by multiple threads */
 sgx_enclave_id_t eid = 0;
 
@@ -215,167 +211,6 @@ void ocall_print_string(const char *str)
     printf("%s", str);
 }
 
-// -------------------------- file IO START -----------------------------------
-FILE *
-fopen_write_or_die(const char *file)
-{
-    FILE *f;
-
-    if (!(f = fopen(file, "w")))
-        printf("can't write file: %s\n", file);
-
-    return f;
-}
-
-FILE *fopen_read_or_die(const char *file)
-{
-    FILE *f;
-
-    if (!(f = fopen(file, "r")))
-        printf("can't read file: %s\n", file);
-
-    return f;
-}
-
-// ---------------------------- file IO END -----------------------------------
-
-// ########################################################
-// --------------------------------------------------------
-// ------ File Read & Padding Functions (GByteArray) ------
-// --------------------------------------------------------
-// ########################################################
-
-// ---------------- Read File GByteArray ----------------
-GByteArray *suck_file_GByteArray(char *filename)
-{
-    FILE *f;
-    struct stat s;
-
-    GByteArray *bdata;
-    bdata = g_byte_array_new();
-
-    stat(filename, &s);
-    g_byte_array_set_size(bdata, s.st_size);
-
-    // f = fopen_read_or_die(filename);
-    if (!(f = fopen(filename, "r")))
-    {
-        printf("can't read filename: %s\n", filename);
-        return NULL;
-    }
-
-    fread(bdata->data, 1, s.st_size, f);
-    fclose(f);
-
-    return bdata;
-}
-
-// ---------------------- Add Padding GByteArray Function----------------------
-void add_padding_GByteArray(GByteArray *pt)
-{
-    // --------- add padding -----------
-    guint8 len[4];
-    guint8 zero;
-
-    // stuff in real length (big endian) before padding
-    len[0] = (pt->len & 0xff000000) >> 24;
-    len[1] = (pt->len & 0xff0000) >> 16;
-    len[2] = (pt->len & 0xff00) >> 8;
-    len[3] = (pt->len & 0xff) >> 0;
-
-    g_byte_array_prepend(pt, len, 4);
-
-    // pad out to multiple of 128 bit (16 byte) blocks
-    zero = 0;
-    while (pt->len % 16)
-        g_byte_array_append(pt, &zero, 1);
-
-    // return pt;
-}
-
-// --- File Read & Padding Functions (GByteArray) END -----
-
-// ########################################################
-// --------------------------------------------------------
-// File Write (both) & Remove Padding (unsigned_char)
-// --------------------------------------------------------
-// ########################################################
-
-// ------------------ Remove Padding ------------------
-GByteArray *remove_padding_unsigned_char(const unsigned char *newpt, uint32_t newpt_len)
-{ // ------------- remove padding ----------------
-
-    // creat newpt GbyteArray
-    GByteArray *pt = g_byte_array_new();
-    g_byte_array_set_size(pt, newpt_len);
-
-    // copy newpt to pt
-    memcpy(pt->data, newpt, newpt_len);
-
-    unsigned int len;
-
-    // get real length
-    len = 0;
-    len = len | ((pt->data[0]) << 24) | ((pt->data[1]) << 16) | ((pt->data[2]) << 8) | ((pt->data[3]) << 0);
-
-    g_byte_array_remove_index(pt, 0);
-    g_byte_array_remove_index(pt, 0);
-    g_byte_array_remove_index(pt, 0);
-    g_byte_array_remove_index(pt, 0);
-
-    /* truncate any garbage from the padding */
-    g_byte_array_set_size(pt, len);
-
-    return pt;
-}
-
-// ------------------ Write File GByteArray ------------------
-int spit_file_GByteArray(const char *filename, GByteArray *bdata, int free)
-{
-    // --------- write file -----------
-    FILE *f;
-
-    // f = fopen_write_or_die(filename);
-
-    if (!(f = fopen(filename, "w")))
-    {
-        printf("can't write file: %s\n", filename);
-        return 1; // error
-    }
-
-    fwrite(bdata->data, 1, bdata->len, f);
-    fclose(f);
-
-    if (free)
-        g_byte_array_free(bdata, 1);
-
-    return 0; // success
-}
-
-// ------------------ Write File unsigned char ------------------
-int spit_file_unsigned_char(const char *filename, const unsigned char *ct, uint32_t ct_len)
-{
-    // --------- write file -----------
-    FILE *f;
-
-    // f = fopen_write_or_die(filename);
-    if (!(f = fopen(filename, "w")))
-    {
-        printf("can't write file: %s\n", filename);
-        return 1; // error
-    }
-
-    fwrite(ct, sizeof(ct[0]), ct_len, f);
-
-    fclose(f);
-
-    return 0;
-}
-
-// ------------ File Write & Remove Padding unsigned_char END -------
-
-// ----------------------- ABE App.cpp END --------------------------
-
 int attestation_with_custom_config()
 {
     config_t config;
@@ -472,8 +307,36 @@ int attestation_with_custom_config()
     return 0;
 }
 
-int main_client(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
+    // if there are no arguments, run attestation with default config
+    if (argc == 1)
+    {
+        /* Initialize the enclave */
+        if (initialize_enclave() < 0)
+        {
+            printf("Enter a character before exit ...\n");
+            getchar();
+            return -1;
+        }
+
+        int sum = 0;
+
+        addition(eid, &sum, 2, 3);
+
+        printf("App.cpp : main() 2+3 -> returned sum %d\n", sum);
+
+        // end enclave functions
+
+        /* Destroy the enclave */
+        sgx_destroy_enclave(eid);
+
+        // remote attestation function with pre data
+        attestation_with_custom_config();
+
+        return 0;
+    }
+
     config_t config;
     sgx_launch_token_t token = {0};
     sgx_status_t status;
@@ -1551,47 +1414,49 @@ int add_nums(int a, int b)
     return sum;
 }
 
-/* Application entry */
-// int SGX_CDECL main(int a, int b)
-int SGX_CDECL main(int argc, char *argv[])
-{
-    // (void)(argc);
-    // (void)(argv);
+// /* Application entry */
+// // int SGX_CDECL main(int a, int b)
+// int SGX_CDECL main(int argc, char *argv[])
+// {
+//     // (void)(argc);
+//     // (void)(argv);
 
-    if (argc < 3)
-    {
-        printf("Please provide 2 arguments\nexample : ./app 2 3\n");
-        return -1;
-    }
+//     // if (argc < 3)
+//     // {
+//     //     printf("Please provide 2 arguments\nexample : ./app 2 3\n");
+//     //     return -1;
+//     // }
 
-    /* Initialize the enclave */
-    if (initialize_enclave() < 0)
-    {
-        printf("Enter a character before exit ...\n");
-        getchar();
-        return -1;
-    }
+//     /* Initialize the enclave */
+//     if (initialize_enclave() < 0)
+//     {
+//         printf("Enter a character before exit ...\n");
+//         getchar();
+//         return -1;
+//     }
 
-    // add enclave functions to be call
+//     // add enclave functions to be call
 
-    // printf_helloworld(global_eid);
+//     // printf_helloworld(global_eid);
 
-    int sum = 0;
+//     int sum = 0;
 
-    int a = atoi(argv[1]);
-    int b = atoi(argv[2]);
+//     // int a = atoi(argv[1]);
+//     // int b = atoi(argv[2]);
 
-    addition(eid, &sum, a, b); // this fuction in Enclave_u.c and defined in Enclave/Enclave.cpp
+//     // addition(eid, &sum, a, b); // this fuction in Enclave_u.c and defined in Enclave/Enclave.cpp
 
-    printf("App.cpp : main() -> returned sum %d\n", sum);
+//     addition(eid, &sum, 2, 3);
 
-    // end enclave functions
+//     printf("App.cpp : main() 2+3 -> returned sum %d\n", sum);
 
-    /* Destroy the enclave */
-    sgx_destroy_enclave(eid);
+//     // end enclave functions
 
-    // remote attestation function with pre data
-    attestation_with_custom_config();
+//     /* Destroy the enclave */
+//     sgx_destroy_enclave(eid);
 
-    return sum;
-}
+//     // remote attestation function with pre data
+//     attestation_with_custom_config();
+
+//     return sum;
+// }

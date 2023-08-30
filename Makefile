@@ -60,7 +60,7 @@ COMMON_CPP_FILES =   service-provider/common.cpp  service-provider/msgio.cpp
 
 COMMON_C_FILES = service-provider/byteorder.c  service-provider/crypto.c  service-provider/hexutil.c   service-provider/fileio.c  service-provider/base64.c  service-provider/logfile.c
 
-GLIB_INCLUDE := -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+# GLIB_INCLUDE := -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 # OPENSSL_INCLUDE := -L/usr/lib/x86_64-linux-gnu -lssl -lcrypto
 
 #----------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ App_Cpp_Files += $(COMMON_CPP_FILES)
 #client_SOURCES = client.cpp service-provider/sgx_detect_linux.c subdir-objects service-provider/sgx_stub.c subdir-objects service-provider/quote_size.c subdir-objects $(common) subdir-objects
 App_C_Files := service-provider/sgx_detect_linux.c service-provider/sgx_stub.c service-provider/quote_size.c $(COMMON_C_FILES)
 
-App_Include_Paths := -IInclude -IApp -I$(SGX_SDK)/include $(GLIB_INCLUDE)
+App_Include_Paths := -IInclude -IApp -I$(SGX_SDK)/include 
 
 App_C_Flags := $(SGX_COMMON_CFLAGS) -fPIC -Wno-attributes $(App_Include_Paths)
 
@@ -363,13 +363,15 @@ policy: $(MRSIGNER_NAME) policy.in $(Signed_Enclave_Name)
 .PHONY: clean
 
 clean:
-	@rm -f .config_* $(App_Name) $(App_Name).so $(App_C_Objects) $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) $(Enclave_C_Objects) Enclave/Enclave_t.* $(Enclave_Test_Key) $(SP_Name) $(SP_Cpp_Objects) $(SP_C_Objects) $(MRSIGNER_NAME) $(MRSIGNER_C_Objects) policy
+	@rm -f .config_* $(App_Name) $(App_Name).so $(App_C_Objects) $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) $(Enclave_C_Objects) Enclave/Enclave_t.* $(Enclave_Test_Key) $(SP_Name) $(SP_Cpp_Objects) $(SP_C_Objects) $(MRSIGNER_NAME) $(MRSIGNER_C_Objects) policy sp-keygen
 
 
 .PHONY: so
 
-# so:
-# 	g++ -shared -o $(App_Name).so App/Enclave_u.o $(App_Cpp_Objects) $(App_C_Objects)   -L$(SGX_SDK)/lib64 -lsgx_urts -lpthread -lsgx_uae_service
 
 so:
 	g++ -shared -o $(App_Name).so App/Enclave_u.o $(App_Cpp_Objects) $(App_C_Objects) $(App_Link_Flags)
+
+
+keygen:
+	gcc -o sp-keygen service-provider/evp-key-to-file-struct.c -lssl -lcrypto && ./sp-keygen

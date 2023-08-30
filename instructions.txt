@@ -1,23 +1,6 @@
 ----------- Generate Key -------
 # generate key and save private key in private_key.pem and create pubkey.h for enclave
->  gcc -o sp-keygen evp-key-to-file-struct.c -lssl -lcrypto && ./sp-keygen
-
-OR
-
->  ./sp-keygen-script
-
-
------------ Build ---------------
-#Run autoreconf to regenerate the configure script and related files
->  autoreconf --force --install
-
-# OR run bootstrap sh file
->  ./bootstrap
-
->  ./configure
-
->  make
-
+>  make keygen
 
 
 ---------- IAS Cert -----------
@@ -29,9 +12,15 @@ OR
 # go to https://api.portal.trustedservices.intel.com/EPID-attestation & login
 # Development Access -> Subscribe (linkable)       here linkable imp!
 # go to https://api.portal.trustedservices.intel.com/developer   - for subscription data
-%%%% "settings" file : 
+%%%% "service-provider/settings" file : 
     copy SPID, Primary Key, Secondary key to 
     set LINKABLE=1  IAS_REPORT_SIGNING_CA_FILE=/path/Intel_SGX_Attestation_RootCA.pem
+
+
+----------- Build ---------------
+# Using makefile
+
+>  make
 
 
 ----------- Run ---------------
@@ -39,4 +28,6 @@ OR
 >  ./run-server  --service-key-file=service_provider_private_key.pem
 
 # client 
+>  ./app
+OR 
 >  ./run-client --linkable
