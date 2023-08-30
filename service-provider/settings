@@ -62,7 +62,7 @@ IAS_SECONDARY_SUBSCRIPTION_KEY=d9a6eb185b534cca9461392b42e39b62
 # http://software.intel.com/sgx [REQUIRED]
 # wget https://certificates.trustedservices.intel.com/Intel_SGX_Attestation_RootCA.pem
 
-IAS_REPORT_SIGNING_CA_FILE=/home/viky/sgx/test/sgx-remote-attestation-sample/service-provider/Intel_SGX_Attestation_RootCA.pem
+IAS_REPORT_SIGNING_CA_FILE=/home/viky/sgx/new/sgx-remote-attestation-sample/service-provider/Intel_SGX_Attestation_RootCA.pem
 
 
 # Set to the URL for your proxy server to force the use of a proxy

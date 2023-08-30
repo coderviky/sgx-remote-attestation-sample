@@ -1,85 +1,86 @@
+/* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Enable libcurl as a user agent */
-#undef AGENT_LIBCURL
+#define AGENT_LIBCURL 1
 
 /* Enable debugging */
-#undef DEBUG
+#define DEBUG 1
 
 /* Default CA bundle for OpenSSL-based applications */
-#undef DEFAULT_CA_BUNDLE_AUTO
+#define DEFAULT_CA_BUNDLE_AUTO "/etc/ssl/certs/ca-certificates.crt"
 
 /* Flag set for prerelease builds */
-#undef EDEBUG
+/* #undef EDEBUG */
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#undef HAVE_INTTYPES_H
+#define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
+#define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the <openssl/evp.h> header file. */
-#undef HAVE_OPENSSL_EVP_H
+#define HAVE_OPENSSL_EVP_H 1
 
 /* Define to 1 if you have the <openssl/pem.h> header file. */
-#undef HAVE_OPENSSL_PEM_H
+#define HAVE_OPENSSL_PEM_H 1
 
 /* Define to 1 if you have the <openssl/x509.h> header file. */
-#undef HAVE_OPENSSL_X509_H
+#define HAVE_OPENSSL_X509_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
+#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H
+#define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H
+#define HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H
+#define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#undef HAVE_SYS_STAT_H
+#define HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#undef HAVE_SYS_TYPES_H
+#define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H
+#define HAVE_UNISTD_H 1
 
 /* Flag set for prerelease and release builds */
-#undef NDEBUG
+/* #undef NDEBUG */
 
 /* Name of package */
-#undef PACKAGE
+#define PACKAGE "sgxautosample"
 
 /* Define to the address where bug reports for this package should be sent. */
-#undef PACKAGE_BUGREPORT
+#define PACKAGE_BUGREPORT "john.p.mechalas@intel.com"
 
 /* Define to the full name of this package. */
-#undef PACKAGE_NAME
+#define PACKAGE_NAME "sgxautosample"
 
 /* Define to the full name and version of this package. */
-#undef PACKAGE_STRING
+#define PACKAGE_STRING "sgxautosample 1.0"
 
 /* Define to the one symbol short name of this package. */
-#undef PACKAGE_TARNAME
+#define PACKAGE_TARNAME "sgxautosample"
 
 /* Define to the home page for this package. */
-#undef PACKAGE_URL
+#define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#undef PACKAGE_VERSION
+#define PACKAGE_VERSION "1.0"
 
 /* Enable hardware simulation mode */
-#undef SGX_HW_SIM
+/* #undef SGX_HW_SIM */
 
 /* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
+#define STDC_HEADERS 1
 
 /* Define if sgx_uae_service.h uses the bool type */
-#undef UAE_SERVICE_HAS_BOOL
+/* #undef UAE_SERVICE_HAS_BOOL */
 
 /* Version number of package */
-#undef VERSION
+#define VERSION "1.0"

@@ -1,46 +1,58 @@
 /*
+ * Copyright (C) 2011-2018 Intel Corporation. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *   * Neither the name of Intel Corporation nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
-Copyright 2018 Intel Corporation
+/* Enclave.edl - Top EDL file. */
 
-This software and the related documents are Intel copyrighted materials,
-and your use of them is governed by the express license under which they
-were provided to you (License). Unless the License provides otherwise,
-you may not use, modify, copy, publish, distribute, disclose or transmit
-this software or the related documents without Intel's prior written
-permission.
-
-This software and the related documents are provided as is, with no
-express or implied warranties, other than those that are expressly stated
-in the License.
-
-*/
-
-#ifndef _WIN32
-#include "config.h"
-#endif
+// #include "config.h"
 
 enclave {
-	include "sgx_trts.h"
+    
+    /* Import ECALL/OCALL from sub-directory EDLs.
+     *  [from]: specifies the location of EDL file. 
+     *  [import]: specifies the functions to import, 
+     *  [*]: implies to import all functions.
+     */
+
+    include "sgx_trts.h"
 	include "sgx_utils.h"
 	include "sgx_tkey_exchange.h"
 
 	from "sgx_tkey_exchange.edl" import *;
+    
+    trusted {
 
-	trusted {
-#ifndef _WIN32
-		include "config.h"
-#endif
-
-		public sgx_status_t get_report([out] sgx_report_t *report,
+        public sgx_status_t get_report([out] sgx_report_t *report,
 			[in] sgx_target_info_t *target_info);
 
-#ifdef _WIN32
-		public size_t get_pse_manifest_size();
-
-		public sgx_status_t get_pse_manifest([out, count=sz] char *buf, size_t sz);
-#endif
-
-		public sgx_status_t enclave_ra_init(sgx_ec256_public_t key, int b_pse,
+        public sgx_status_t enclave_ra_init(sgx_ec256_public_t key, int b_pse,
 			[out] sgx_ra_context_t *ctx, [out] sgx_status_t *pse_status);
 
 		public sgx_status_t enclave_ra_init_def(int b_pse,
@@ -50,15 +62,57 @@ enclave {
 			[out] sgx_status_t *get_keys_status, sgx_ra_context_t ctx,
 			sgx_ra_key_type_t type, [out] sgx_sha256_hash_t *hash);
 
-		public sgx_status_t enclave_ra_close(sgx_ra_context_t ctx);
+		public sgx_status_t enclave_ra_close(sgx_ra_context_t ctx); 
 
-	};
+        public int addition(int a, int b);
 
-	untrusted {
-#ifndef _WIN32
-		include "config.h"
-#endif
-	};
+
+    };
+
+    /* 
+     * ocall_print_string - invokes OCALL to display string buffer inside the enclave.
+     *  [in]: copy the string buffer to App outside.
+     *  [string]: specifies 'str' is a NULL terminated buffer.
+     */
+    untrusted {
+
+        
+
+         void ocall_print_string([in, string] const char *str);
+    };
+
+    /*  int ocall_addition(int a, int b); 
+    void ocall_print_string([in, string] const char *str);
+    */
+
 };
 
 
+
+
+
+
+
+
+// enclave {
+    
+//     /* Import ECALL/OCALL from sub-directory EDLs.
+//      *  [from]: specifies the location of EDL file. 
+//      *  [import]: specifies the functions to import, 
+//      *  [*]: implies to import all functions.
+//      */
+    
+//     trusted {
+//         public int addition();
+//     };
+
+//     /* 
+//      * ocall_print_string - invokes OCALL to display string buffer inside the enclave.
+//      *  [in]: copy the string buffer to App outside.
+//      *  [string]: specifies 'str' is a NULL terminated buffer.
+//      */
+//     untrusted {
+//         void ocall_addition([in, string] const char *str);
+//     };
+
+// };
