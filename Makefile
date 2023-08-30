@@ -363,7 +363,7 @@ policy: $(MRSIGNER_NAME) policy.in $(Signed_Enclave_Name)
 .PHONY: clean
 
 clean:
-	@rm -f .config_* $(App_Name) $(App_Name).so $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) $(Enclave_C_Objects) Enclave/Enclave_t.* $(Enclave_Test_Key) $(SP_Name) $(SP_Cpp_Objects) $(SP_C_Objects) $(MRSIGNER_NAME) $(MRSIGNER_C_Objects) policy
+	@rm -f .config_* $(App_Name) $(App_Name).so $(App_C_Objects) $(Enclave_Name) $(Signed_Enclave_Name) $(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) $(Enclave_C_Objects) Enclave/Enclave_t.* $(Enclave_Test_Key) $(SP_Name) $(SP_Cpp_Objects) $(SP_C_Objects) $(MRSIGNER_NAME) $(MRSIGNER_C_Objects) policy
 
 
 .PHONY: so
