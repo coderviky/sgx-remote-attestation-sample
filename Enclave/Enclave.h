@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// decryption
+#include <openssl/aes.h>
+
 #if defined(__cplusplus)
 extern "C"
 {

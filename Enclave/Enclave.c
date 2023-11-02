@@ -174,7 +174,7 @@ sgx_status_t enclave_ra_init_def(int b_pse, sgx_ra_context_t *ctx,
  */
 
 sgx_status_t enclave_ra_get_key_hash(sgx_status_t *get_keys_ret,
-                                     sgx_ra_context_t ctx, sgx_ra_key_type_t type, sgx_sha256_hash_t *hash)
+                                     sgx_ra_context_t ctx, sgx_ra_key_type_t type, sgx_sha256_hash_t *hash, unsigned char *ciphertext)
 {
     sgx_status_t sha_ret;
     sgx_ra_key_128_t k;
@@ -187,6 +187,28 @@ sgx_status_t enclave_ra_get_key_hash(sgx_status_t *get_keys_ret,
     *get_keys_ret = sgx_ra_get_keys(ctx, type, &k);
     if (*get_keys_ret != SGX_SUCCESS)
         return *get_keys_ret;
+
+    printf("Ciphertext: ");
+    for (int i = 0; i < 16; i++)
+    {
+        printf("%02x", ciphertext[i]);
+    }
+    printf("\n");
+
+    // if sk then ciphertext to pliantext
+    if (type == SGX_RA_KEY_SK)
+    {
+        AES_KEY aesKey;
+        AES_set_decrypt_key(k, 128, &aesKey);
+
+        printf("SK         = %s\n", k);
+
+        unsigned char plaintext[1000];
+        AES_decrypt(ciphertext, plaintext, &aesKey);
+
+        printf("Decrypted Text: %s\n", plaintext);
+        // memcpy(k, plaintext, sizeof(k));
+    }
 
     /* Now generate a SHA hash */
 

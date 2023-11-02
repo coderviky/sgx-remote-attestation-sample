@@ -55,6 +55,11 @@ KEY_EXCHANGE_LIB_NAME := sgx_tkey_exchange
 U_KEY_EXCHANGE_LIB_NAME := sgx_ukey_exchange
 #----------------------------------------------------------
 
+#------------------------------------
+# ------ openssl related Library ------
+# GLIB_INCLUDE := -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+OPENSSL_INCLUDE := -L/usr/lib/x86_64-linux-gnu -lssl -lcrypto
+
 # --------------------- COMMON  ---------------------
 COMMON_CPP_FILES =   service-provider/common.cpp  service-provider/msgio.cpp 
 
@@ -158,9 +163,14 @@ else
 endif
 Crypto_Library_Name := sgx_tcrypto
 
+
+# ------openssl related ------
+# PBC_INCLUDE := -I/usr/local/include/pbc -I/usr/local/include
+OPENSSL_INCLUDE := -I/opt/intel/sgxssl/include
+
 Enclave_Cpp_Files := Enclave/Enclave.cpp
 Enclave_C_Files := Enclave/Enclave.c
-Enclave_Include_Paths := -IInclude -IEnclave -I$(SGX_SDK)/include -I$(SGX_SDK)/include/tlibc -I$(SGX_SDK)/include/libcxx
+Enclave_Include_Paths := -IInclude -IEnclave -I$(SGX_SDK)/include -I$(SGX_SDK)/include/tlibc -I$(SGX_SDK)/include/libcxx $(OPENSSL_INCLUDE)
 
 CC_BELOW_4_9 := $(shell expr "`$(CC) -dumpversion`" \< "4.9")
 ifeq ($(CC_BELOW_4_9), 1)
@@ -179,10 +189,18 @@ Enclave_Cpp_Flags := $(Enclave_C_Flags) -std=c++11 -nostdinc++
 #       Use `--start-group' and `--end-group' to link these libraries.
 # Do NOT move the libraries linked with `--start-group' and `--end-group' within `--whole-archive' and `--no-whole-archive' options.
 # Otherwise, you may get some undesirable errors.
+
+# ------------ library ------------
+# ------ openssl lib path ----
+# PBC_LIB := -L/usr/local/lib64 -lsgx_tpbc -L/usr/local/lib -lsgx_tgmp
+OPENSSL_LIB := -L/opt/intel/sgxssl/lib64 -lsgx_tsgxssl -lsgx_usgxssl -lsgx_tsgxssl_crypto
+#------------------------------------
+
+
 Enclave_Link_Flags := $(SGX_COMMON_CFLAGS) -Wl,--no-undefined -nostdlib -nodefaultlibs -nostartfiles -L$(SGX_LIBRARY_PATH) \
 	-Wl,--whole-archive -l$(Trts_Library_Name) -Wl,--no-whole-archive \
 	-Wl,--start-group -lsgx_tstdc -lsgx_tcxx -l$(Crypto_Library_Name) -l$(Service_Library_Name) \
-	-l$(KEY_EXCHANGE_LIB_NAME) -Wl,--end-group \
+	-l$(KEY_EXCHANGE_LIB_NAME) $(OPENSSL_LIB) -Wl,--end-group \
 	-Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined \
 	-Wl,-pie,-eenclave_entry -Wl,--export-dynamic  \
 	-Wl,--defsym,__ImageBase=0 -Wl,--gc-sections   \

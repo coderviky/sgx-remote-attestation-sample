@@ -56,7 +56,7 @@ This sample demonstrates how to use Intel(R) Software Guard Extensions (Intel(R)
  generate app binary file and run it
 
 ```bash
-# generate files to run in sgx enclave
+# generate files
   make
 
 # run servie provider (server)

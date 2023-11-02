@@ -38,6 +38,9 @@ in the License.
 #include <sgx_report.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
+// to encrypt secret
+#include <openssl/aes.h>
+//
 #include "json.hpp"
 #include "common.h"
 #include "hexutil.h"
@@ -63,6 +66,17 @@ using namespace std;
 #ifdef _WIN32
 #define strdup(x) _strdup(x)
 #endif
+
+// --------------------------------
+// encrypt secret
+// void encryptString(unsigned char *ciphertext)
+// {
+// 	unsigned char plaintext[] = "Hello, Client!";
+// 	AES_KEY aesKey;
+// 	AES_set_encrypt_key(SK, 128, &aesKey);
+// 	AES_encrypt(plaintext, ciphertext, &aesKey);
+// }
+// --------------------------------
 
 static const unsigned char def_service_private_key[32] = {
 	0x90, 0xe7, 0x6c, 0xbb, 0x2d, 0x52, 0xa1, 0xce,
@@ -1042,12 +1056,15 @@ int process_msg3(MsgIO *msgio, IAS_Connection *ias, sgx_ra_msg1_t *msg1,
 		/* vs. the entire structure as one send_msg() */
 
 		msgio->send_partial(&msg4->status, sizeof(msg4->status));
-		msgio->send(&msg4->platformInfoBlob, sizeof(msg4->platformInfoBlob));
+		// msgio->send(&msg4->platformInfoBlob, sizeof(msg4->platformInfoBlob));
+		msgio->send_partial(&msg4->platformInfoBlob, sizeof(msg4->platformInfoBlob));
 
 		fsend_msg_partial(fplog, &msg4->status, sizeof(msg4->status));
-		fsend_msg(fplog, &msg4->platformInfoBlob,
-				  sizeof(msg4->platformInfoBlob));
-		edivider();
+		// fsend_msg(fplog, &msg4->platformInfoBlob,
+		// 		  sizeof(msg4->platformInfoBlob));
+		fsend_msg_partial(fplog, &msg4->platformInfoBlob,
+						  sizeof(msg4->platformInfoBlob));
+		// edivider();
 
 		/*
 		 * If the enclave is trusted, derive the MK and SK. Also get
@@ -1055,7 +1072,7 @@ int process_msg3(MsgIO *msgio, IAS_Connection *ias, sgx_ra_msg1_t *msg1,
 		 * secret between us and the client.
 		 */
 
-		if (msg4->status == Trusted)
+		if (msg4->status == Trusted || msg4->status == Trusted_ItsComplicated)
 		{
 			unsigned char hashmk[32], hashsk[32];
 
@@ -1075,10 +1092,33 @@ int process_msg3(MsgIO *msgio, IAS_Connection *ias, sgx_ra_msg1_t *msg1,
 				{
 					eprintf("MK         = %s\n", hexstring(session->mk, 16));
 					eprintf("SK         = %s\n", hexstring(session->sk, 16));
+					eprintf("SK         = %s\n", session->sk);
 				}
 				eprintf("SHA256(MK) = %s\n", hexstring(hashmk, 32));
 				eprintf("SHA256(SK) = %s\n", hexstring(hashsk, 32));
 			}
+
+			// encrypt and send message
+			// unsigned char ciphertext[AES_BLOCK_SIZE];
+
+			unsigned char plaintext[] = "Hello, Client! welcome to india !!!!!!!!!! go baby go ";
+			AES_KEY aesKey;
+			AES_set_encrypt_key(session->sk, 128, &aesKey);
+			AES_encrypt(plaintext, msg4->ciphertext, &aesKey);
+
+			printf("Ciphertext: ");
+			for (int i = 0; i < AES_BLOCK_SIZE; i++)
+			{
+				printf("%02x", msg4->ciphertext[i]);
+			}
+			printf("\n");
+
+			// send ciphertext
+			msgio->send(msg4->ciphertext, sizeof(msg4->ciphertext));
+			fsend_msg(fplog, msg4->ciphertext,
+					  sizeof(msg4->ciphertext));
+			//
+			edivider();
 		}
 	}
 	else
@@ -1611,7 +1651,27 @@ int get_attestation_report(IAS_Connection *ias, int version,
 			if (verbose)
 				eprintf("Enclave TRUSTED\n");
 		}
-		else if (!(reportObj["isvEnclaveQuoteStatus"].ToString().compare("CONFIGURATION_NEEDED")))
+		//
+		// service providers policy that trusted but complicated - attestion policy is based on isvEnclaveQuoteStatus:
+		else if (!(reportObj["isvEnclaveQuoteStatus"].ToString().compare("SW_HARDENING_NEEDED")) || !(reportObj["isvEnclaveQuoteStatus"].ToString().compare("CONFIGURATION_AND_SW_HARDENING_NEEDED")))
+		{
+			if (strict_trust) // not set
+			{
+				msg4->status = NotTrusted_ItsComplicated;
+				if (verbose)
+					eprintf("Enclave NOT TRUSTED and COMPLICATED - Reason: %s\n",
+							reportObj["isvEnclaveQuoteStatus"].ToString().c_str());
+			}
+			else
+			{
+				if (verbose)
+					eprintf("Enclave TRUSTED and COMPLICATED - Reason: %s\n",
+							reportObj["isvEnclaveQuoteStatus"].ToString().c_str());
+				msg4->status = Trusted_ItsComplicated;
+			}
+		}
+		// previous work
+		/* else if (!(reportObj["isvEnclaveQuoteStatus"].ToString().compare("CONFIGURATION_NEEDED")))
 		{
 			if (strict_trust)
 			{
@@ -1627,7 +1687,7 @@ int get_attestation_report(IAS_Connection *ias, int version,
 							reportObj["isvEnclaveQuoteStatus"].ToString().c_str());
 				msg4->status = Trusted_ItsComplicated;
 			}
-		}
+		} */
 		else if (!(reportObj["isvEnclaveQuoteStatus"].ToString().compare("GROUP_OUT_OF_DATE")))
 		{
 			msg4->status = NotTrusted_ItsComplicated;

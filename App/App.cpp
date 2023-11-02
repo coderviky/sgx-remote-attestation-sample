@@ -1072,17 +1072,26 @@ int do_attestation(sgx_enclave_id_t eid, config_t *config)
      * provider.
      */
 
-    if (enclaveTrusted == Trusted)
+    if (enclaveTrusted == Trusted || enclaveTrusted == Trusted_ItsComplicated)
     {
         sgx_status_t key_status, sha_status;
         sgx_sha256_hash_t mkhash, skhash;
 
         // First the MK
 
+        // print ciphertext
+        // eprintf("ciphertext : %s", )
+        printf("Ciphertext: ");
+        for (int i = 0; i < 16; i++)
+        {
+            printf("%02x", msg4->ciphertext[i]);
+        }
+        printf("\n");
+
         if (debug)
             eprintf("+++ fetching SHA256(MK)\n");
         status = enclave_ra_get_key_hash(eid, &sha_status, &key_status, ra_ctx,
-                                         SGX_RA_KEY_MK, &mkhash);
+                                         SGX_RA_KEY_MK, &mkhash, msg4->ciphertext);
         if (debug)
             eprintf("+++ ECALL enclage_ra_get_key_hash (MK) ret= 0x%04x\n",
                     status);
@@ -1094,7 +1103,7 @@ int do_attestation(sgx_enclave_id_t eid, config_t *config)
         if (debug)
             eprintf("+++ fetching SHA256(SK)\n");
         status = enclave_ra_get_key_hash(eid, &sha_status, &key_status, ra_ctx,
-                                         SGX_RA_KEY_SK, &skhash);
+                                         SGX_RA_KEY_SK, &skhash, msg4->ciphertext);
         if (debug)
             eprintf("+++ ECALL enclage_ra_get_key_hash (MK) ret= 0x%04x\n",
                     status);

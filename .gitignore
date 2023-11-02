@@ -13,7 +13,6 @@ win32/agent_win32.h
 
 #--------
 sp-keygen
-run-client
 
 Makefile.in
 

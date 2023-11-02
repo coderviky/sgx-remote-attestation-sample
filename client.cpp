@@ -905,12 +905,13 @@ int do_attestation(sgx_enclave_id_t eid, config_t *config)
 	 * provider.
 	 */
 
-	if (enclaveTrusted == Trusted)
+	if (enclaveTrusted == Trusted || enclaveTrusted == Trusted_ItsComplicated)
 	{
 		sgx_status_t key_status, sha_status;
 		sgx_sha256_hash_t mkhash, skhash;
 
 		// First the MK
+		printf("enclaveTrusted == Trusted_ItsComplicated\n");
 
 		if (debug)
 			eprintf("+++ fetching SHA256(MK)\n");
